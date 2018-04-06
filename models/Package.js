@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 // role Schema 
-var Package = mongoose.Schema({
+const Package = mongoose.Schema({
     services:{
         type: Array
     },

@@ -1,10 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const passport = require('passport');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const User = require('./models/User');
-const jwt = require('jsonwebtoken');
 
 
 const bodyParse = bodyParser.json();
@@ -75,12 +72,16 @@ const isAuthenticated = (req, res, next) => {
 
 
 module.exports = {
+	atFirst:[
+		CROS,
+		bodyParse,
+		urlencodedParser,
+		removePowered
+	],
 	isAuthenticated,
-	CROS,
-	handleErrors,
-	handle404,
-	handle500,
-	removePowered,
-	bodyParse,
-	urlencodedParser
+	atLast:[
+		handleErrors,
+		handle404,
+		handle500,
+	]
 }

@@ -1,11 +1,10 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt'),
-    Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt'), Schema = mongoose.Schema;
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 
 // User Schema
-var UserSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -38,7 +37,7 @@ var UserSchema = mongoose.Schema({
     }
 });
 
-var User = module.exports = mongoose.model('User', UserSchema);
+const User = module.exports = mongoose.model('User', UserSchema);
 
 // create a user + hashing the password
 module.exports.createUser = (newUser, callback) => {
@@ -66,7 +65,7 @@ module.exports.updateUser = (id, user, callback) => {
 
 // login auth 
 module.exports.auth = (email, password, callback) => {
-    var query = {
+    const query = {
         email: email
     };
     User.findOne(query).exec((err, user) => {

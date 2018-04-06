@@ -1,43 +1,49 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-const keys = require('./config/keys');
-const middlewares = require('./middlewares');
-const user = require('./routes/user.router');
-const auth = require('./routes/auth.router');
+import express from"express";
+import mongoose from "mongoose";
+import keys from "./config/keys";
+import middlewares from"./middlewares";
+import user from"./routes/user.router";
+import auth from "./routes/auth.router";
+import { graphqlExpress , graphiqlExpress } from "apollo-server-express";
 
 // Db connection
 mongoose.Promise = global.Promise;
-mongoose.connect(keys.db, {
-    useMongoClient: true
-  }).then(() =>{
-      console.log('Connected');
-  }).catch((err)=>{
-      if(err) throw err;
-      console.log('Connection error');
+mongoose
+  .connect(keys.db)
+  .then(() => {
+    console.log("DB Connected");
+  })
+  .catch(err => {
+    if (err) throw err;
+    console.log("Connection error");
   });
 
-var app = express();
+const app = express();
 
-app.use( express.static('./uploads') );
-app.use( '/' , middlewares.CROS);
-app.use( '/' , middlewares.bodyParse);
-app.use( '/' , middlewares.urlencodedParser);
-app.use( '/' , middlewares.removePowered);
+app.use(express.static("./uploads"));
 
+// --------------------- Middlewares Before the Application Routes --------------------
+middlewares.atFirst.forEach( middleware => app.use("/" , middleware ) );
+
+
+// --------- GRAPHQL ------------
+app.use("/graphi" , graphiqlExpress({
+    endpointURL:"/graphql"
+}));
+app.use("/graphql", graphqlExpress({}));
 
 // -----------------------------AUTH ROUTES --------------------
-app.use('/', auth);
+app.use("/", auth);
 
 // ---------------------------- USER ROUTES --------------------
-app.use('/user', middlewares.isAuthenticated , user)
+app.use("/user", middlewares.isAuthenticated, user);
+
+// --------------------- Middlewares After the Application Routes --------------------
+middlewares.atLast.forEach( middleware => app.use("/" , middleware ) );
 
 
-// --- ---------- ------------ --------------- -------- // 
-app.use( '/' , middlewares.handleErrors);
-app.use( '/' , middlewares.handle404);
-app.use( '/' , middlewares.handle500);
-// --- ---------- ------------ --------------- -------- // 
 
-
-app.listen(3000);
+// --- ---------- ------------ --------------- -------- //
+app.listen(3000, () => {
+  console.log("Server ready");
+});
